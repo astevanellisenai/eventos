@@ -1,0 +1,23 @@
+<h1>Lista de Participantes</h1>
+
+<a href="/admin">Voltar</a>
+
+<hr>
+
+<% participantes.forEach(participante => { %>
+
+    <h2><%= participante.nome %></h2>
+
+    <p>
+        <strong>E-mail:</strong>
+        <%= participante.email %>
+    </p>
+
+    <p>
+        <strong>Telefone:</strong>
+        <%= participante.telefone %>
+    </p>
+
+    <hr>
+
+<% }) %>

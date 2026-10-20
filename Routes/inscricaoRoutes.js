@@ -1,0 +1,189 @@
+const express = require('express');
+const router = express.Router();
+const BD = require('../db');
+
+// Listar
+router.get('/', async (req, res) => {
+    try {
+
+        const resultado = await BD.query(`
+            SELECT
+                i.id,
+                i.participante_id,
+                i.evento_id,
+                i.data_inscricao,
+                i.status,
+                i.presente,
+                p.nome AS participante,
+                e.titulo AS evento
+            FROM inscricoes i
+
+            INNER JOIN participantes p
+                ON i.participante_id = p.id
+
+            INNER JOIN eventos e
+                ON i.evento_id = e.id
+
+            ORDER BY i.id;
+        `);
+
+        res.render('inscricoes/index', {
+            inscricoes: resultado.rows
+        });
+
+    } catch (erro) {
+        console.log('Erro: ' + erro);
+    }
+});
+
+
+// Novo
+router.get('/novo', async (req, res) => {
+    try {
+
+        const participantes = await BD.query(`
+            SELECT *
+            FROM participantes
+            ORDER BY nome;
+        `);
+
+        const eventos = await BD.query(`
+            SELECT *
+            FROM eventos
+            ORDER BY titulo;
+        `);
+
+        res.render('inscricoes/novo', {
+            participantes: participantes.rows,
+            eventos: eventos.rows
+        });
+
+    } catch (erro) {
+        console.log('Erro: ' + erro);
+    }
+});
+
+
+router.post('/novo', async (req, res) => {
+    try {
+
+        const {
+            participante_id,
+            evento_id,
+            status,
+            presente
+        } = req.body;
+
+        await BD.query(`
+            INSERT INTO inscricoes
+            (
+                participante_id,
+                evento_id,
+                status,
+                presente
+            )
+            VALUES ($1, $2, $3, $4);
+        `, [
+            participante_id,
+            evento_id,
+            status,
+            presente
+        ]);
+
+        res.redirect('/inscricoes');
+
+    } catch (erro) {
+        console.log('Erro: ' + erro);
+    }
+});
+
+
+// editar
+router.get('/editar/:id', async (req, res) => {
+    try {
+
+        const id = req.params.id;
+
+        const inscricao = await BD.query(`
+            SELECT *
+            FROM inscricoes
+            WHERE id = $1;
+        `, [id]);
+
+        const participantes = await BD.query(`
+            SELECT *
+            FROM participantes
+            ORDER BY nome;
+        `);
+
+        const eventos = await BD.query(`
+            SELECT *
+            FROM eventos
+            ORDER BY titulo;
+        `);
+
+        res.render('inscricoes/editar', {
+            inscricao: inscricao.rows[0],
+            participantes: participantes.rows,
+            eventos: eventos.rows
+        });
+
+    } catch (erro) {
+        console.log('Erro: ' + erro);
+    }
+});
+
+router.post('/editar/:id', async (req, res) => {
+    try {
+
+        const id = req.params.id;
+
+        const {
+            participante_id,
+            evento_id,
+            status,
+            presente
+        } = req.body;
+
+        await BD.query(`
+            UPDATE inscricoes
+            SET
+                participante_id = $1,
+                evento_id = $2,
+                status = $3,
+                presente = $4
+            WHERE id = $5;
+        `, [
+            participante_id,
+            evento_id,
+            status,
+            presente,
+            id
+        ]);
+
+        res.redirect('/inscricoes');
+
+    } catch (erro) {
+        console.log('Erro: ' + erro);
+    }
+});
+
+// excluir 
+router.post('/excluir/:id', async (req, res) => {
+    try {
+
+        const id = req.params.id;
+
+        await BD.query(`
+            DELETE FROM inscricoes
+            WHERE id = $1;
+        `, [id]);
+
+        res.redirect('/inscricoes');
+
+    } catch (erro) {
+        console.log('Erro: ' + erro);
+    }
+});
+
+module.exports = router;

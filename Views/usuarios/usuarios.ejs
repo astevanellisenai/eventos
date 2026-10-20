@@ -1,0 +1,18 @@
+<h1>Lista de Usuários</h1>
+
+<a href="/admin">Voltar</a>
+
+<hr>
+
+<% usuarios.forEach(usuario => { %>
+
+    <h2><%= usuario.nome %></h2>
+
+    <p>
+        <strong>E-mail:</strong>
+        <%= usuario.email %>
+    </p>
+
+    <hr>
+
+<% }) %>

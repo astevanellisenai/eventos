@@ -1,0 +1,18 @@
+<h1>Lista de Categorias</h1>
+
+<a href="/admin">Voltar</a>
+
+<hr>
+
+<% categorias.forEach(categoria => { %>
+
+    <h2><%= categoria.nome %></h2>
+
+    <p>
+        <strong>Descrição:</strong>
+        <%= categoria.descricao %>
+    </p>
+
+    <hr>
+
+<% }) %>

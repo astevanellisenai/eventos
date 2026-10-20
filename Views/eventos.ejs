@@ -1,0 +1,18 @@
+<h1>Lista de Eventos</h1>
+<a href="/admin">Voltar</a>
+
+<% eventos.forEach(evento => { %>
+
+    <h2><%= evento.titulo %></h2>
+    <p><strong>Descrição</strong></p>
+    <%=evento.descricao%>
+    <p><strong>Data</strong></p>
+    <%=evento.data_evento%>
+    <p><strong>Horário:</strong></p>
+    <%=evento.horario%>
+    <p><strong>Local:</strong></p>
+    <%=evento.local%>
+    <p><strong>Vagas:</strong></p>
+    <%=evento.quantidade_vagas%>
+    <hr>
+<% }) %>
