@@ -1,11 +1,14 @@
-<h1>login</h1>
-<p>Informe sesus dados para acessar o sistema!</p>
-<br><br>
-<label>E-mail:</label>
-<input type="email">
-<br><br>
-<label>Senha</label>
-<input type="password">
-<br><br>
-<a href="/admin"><button>Entrar</button></a>
-<a href="/">Voltar</a>
+<h1>Login</h1> 
+<% if (erro) { %>
+    <p><%= erro %></p>
+<% } %>
+
+<form method="POST" action="/login">
+    <label>E-mail:</label>
+    <input type="email" name="email" required>
+    <br><br>
+    <label>Senha: </label>
+    <input type="password", name="senha", required>
+    <br><br>
+    <button type="submit">Entrar</button>
+</form>
