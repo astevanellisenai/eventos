@@ -2,11 +2,19 @@
 
 <a href="/admin">Voltar</a>
 
+<br><br>
+
+<a href="/inscricoes/novo">
+    Nova Inscrição
+</a>
+
 <hr>
 
-<% inscricoes.forEach(inscricao => { %>
+<% inscricoes.forEach(inscricao=> { %>
 
-    <h2><%= inscricao.participante %></h2>
+    <h2>
+        <%= inscricao.participante %>
+    </h2>
 
     <p>
         <strong>Evento:</strong>
@@ -23,6 +31,20 @@
         <%= inscricao.presente ? 'Sim' : 'Não' %>
     </p>
 
+    <p>
+        <a href="/inscricoes/editar/<%= inscricao.id %>">
+            Editar
+        </a>
+    </p>
+
+    <form action="/inscricoes/excluir/<%= inscricao.id %>" method="POST">
+
+        <button type="submit">
+            Excluir
+        </button>
+
+    </form>
+
     <hr>
 
-<% }) %>
+    <% }) %>

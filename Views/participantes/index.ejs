@@ -2,11 +2,19 @@
 
 <a href="/admin">Voltar</a>
 
+<br><br>
+
+<a href="/participantes/novo">
+    Novo Participante
+</a>
+
 <hr>
 
-<% participantes.forEach(participante => { %>
+<% participantes.forEach(participante=> { %>
 
-    <h2><%= participante.nome %></h2>
+    <h2>
+        <%= participante.nome %>
+    </h2>
 
     <p>
         <strong>E-mail:</strong>
@@ -18,6 +26,18 @@
         <%= participante.telefone %>
     </p>
 
+    <p>
+        <a href="/participantes/editar/<%= participante.id %>">
+            Editar
+        </a>
+
+        |
+
+        <a href="/participantes/excluir/<%= participante.id %>">
+            Excluir
+        </a>
+    </p>
+
     <hr>
 
-<% }) %>
+    <% }) %>
