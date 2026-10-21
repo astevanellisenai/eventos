@@ -129,7 +129,7 @@ app.use("/usuarios", exigirLogin, usuariosRoutes);
 //Rotas Inscricao
 const inscricaoRoutes =
     require('./Routes/inscricaoRoutes');
-app.use("/inscricao", exigirLogin, inscricaoRoutes);
+app.use("/inscricoes", exigirLogin, inscricaoRoutes);
 
 //logout
 app.get('/logout', (req, res) => {
