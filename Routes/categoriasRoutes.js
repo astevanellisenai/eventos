@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 
 //Create 
 router.get('/novo', (req, res) => {
-    res.render('categoria/novo');
+    res.render('categorias/novo');
 });
 
 router.post('/novo', async (req, res) => {
