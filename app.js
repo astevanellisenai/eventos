@@ -22,8 +22,44 @@ app.use(session({
 }));
 
 //Rotas
-app.get("/", (req, res) => {
-    res.render("landing/index");
+app.get("/", async (req, res) => {
+    try{
+        const resultado = await BD.query(
+        `
+            SELECT
+                e.id,
+                e.titulo,
+                e.descricao,
+                e.data_evento,
+                TO_CHAR(e.data_evento, 'DD/MM/YYYY') AS data_formatada,
+                e.horario,
+                TO_CHAR(e.horario, 'HH24:MI') AS horario_formatado,
+                e.local,
+                e.quantidade_vagas,
+                e.imagem_url,
+                c.nome AS nome_categoria,
+                u.nome AS nome_organizador
+            FROM eventos e
+            INNER JOIN categorias c
+                ON e.categoria_id = c.id
+            INNER JOIN usuarios u
+                ON e.organizador_id = u.id
+                WHERE e.data_evento >= CURRENT_DATE
+            ORDER BY e.data_evento ASC
+        `
+        );
+         const eventosAtivos = resultado.rows;
+
+         res.render('landing/index', {
+            eventosAtivos
+        });
+    }catch(erro){
+        console.error('Erro ao buscar eventos:', erro);
+        res.render('landing/index', {
+            titulo: 'Conecta Eventos',
+            eventosAtivos: []
+        });
+    }
 });
 
 //Rota Login
