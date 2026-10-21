@@ -127,8 +127,7 @@ const usuariosRoutes =
 app.use("/usuarios", exigirLogin, usuariosRoutes);
 
 //Rotas Inscricao
-const inscricaoRoutes =
-    require('./Routes/inscricaoRoutes');
+const inscricaoRoutes = require('./Routes/inscricaoRoutes');
 app.use("/inscricoes", exigirLogin, inscricaoRoutes);
 
 //logout
