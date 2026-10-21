@@ -2,8 +2,13 @@ const express = require('express');
 const router = express.Router();
 const BD = require('../db');
 
-// Listar
+
+// ======================================================
+// LISTAR INSCRIÇÕES
+// ======================================================
+
 router.get('/', async (req, res) => {
+
     try {
 
         const resultado = await BD.query(`
@@ -16,6 +21,7 @@ router.get('/', async (req, res) => {
                 i.presente,
                 p.nome AS participante,
                 e.titulo AS evento
+
             FROM inscricoes i
 
             INNER JOIN participantes p
@@ -24,7 +30,7 @@ router.get('/', async (req, res) => {
             INNER JOIN eventos e
                 ON i.evento_id = e.id
 
-            ORDER BY i.id;
+            ORDER BY i.id
         `);
 
         res.render('inscricoes/index', {
@@ -32,47 +38,79 @@ router.get('/', async (req, res) => {
         });
 
     } catch (erro) {
-        console.log('Erro: ' + erro);
+
+        console.log(
+            'Erro ao listar inscrições: ' + erro
+        );
+
+        res.status(500).send(
+            'Erro ao carregar inscrições'
+        );
+
     }
+
 });
 
 
-// Novo
+// ======================================================
+// ABRIR TELA NOVA INSCRIÇÃO
+// ======================================================
+
 router.get('/novo', async (req, res) => {
+
     try {
 
         const participantes = await BD.query(`
             SELECT *
             FROM participantes
-            ORDER BY nome;
+            ORDER BY nome
         `);
 
         const eventos = await BD.query(`
             SELECT *
             FROM eventos
-            ORDER BY titulo;
+            ORDER BY titulo
         `);
 
         res.render('inscricoes/novo', {
+
             participantes: participantes.rows,
             eventos: eventos.rows
+
         });
 
     } catch (erro) {
-        console.log('Erro: ' + erro);
+
+        console.log(
+            'Erro ao abrir cadastro de inscrição: ' + erro
+        );
+
+        res.status(500).send(
+            'Erro ao abrir cadastro de inscrição'
+        );
+
     }
+
 });
 
 
+// ======================================================
+// CADASTRAR INSCRIÇÃO
+// ======================================================
+
 router.post('/novo', async (req, res) => {
+
     try {
 
         const {
             participante_id,
             evento_id,
-            status,
-            presente
+            status
         } = req.body;
+
+        const presente =
+            req.body.presente === 'true';
+
 
         await BD.query(`
             INSERT INTO inscricoes
@@ -82,58 +120,112 @@ router.post('/novo', async (req, res) => {
                 status,
                 presente
             )
-            VALUES ($1, $2, $3, $4);
-        `, [
+            VALUES
+            (
+                $1,
+                $2,
+                $3,
+                $4
+            )
+        `,
+        [
             participante_id,
             evento_id,
             status,
             presente
         ]);
 
+
         res.redirect('/inscricoes');
 
     } catch (erro) {
-        console.log('Erro: ' + erro);
+
+        console.log(
+            'Erro ao cadastrar inscrição: ' + erro
+        );
+
+        res.status(500).send(
+            'Erro ao cadastrar inscrição'
+        );
+
     }
+
 });
 
 
-// editar
+// ======================================================
+// ABRIR TELA EDITAR
+// ======================================================
+
 router.get('/editar/:id', async (req, res) => {
+
     try {
 
         const id = req.params.id;
 
+
         const inscricao = await BD.query(`
             SELECT *
             FROM inscricoes
-            WHERE id = $1;
-        `, [id]);
+            WHERE id = $1
+        `,
+        [
+            id
+        ]);
+
+
+        if (inscricao.rows.length === 0) {
+
+            return res.status(404).send(
+                'Inscrição não encontrada'
+            );
+
+        }
+
 
         const participantes = await BD.query(`
             SELECT *
             FROM participantes
-            ORDER BY nome;
+            ORDER BY nome
         `);
+
 
         const eventos = await BD.query(`
             SELECT *
             FROM eventos
-            ORDER BY titulo;
+            ORDER BY titulo
         `);
 
+
         res.render('inscricoes/editar', {
+
             inscricao: inscricao.rows[0],
             participantes: participantes.rows,
             eventos: eventos.rows
+
         });
 
     } catch (erro) {
-        console.log('Erro: ' + erro);
+
+        console.log(
+            'Erro ao carregar inscrição: ' + erro
+        );
+
+        res.status(500).send(
+            'Erro ao carregar inscrição'
+        );
+
     }
+
 });
 
+
+// ======================================================
+// ATUALIZAR INSCRIÇÃO
+// ======================================================
+
 router.post('/editar/:id', async (req, res) => {
+
     try {
 
         const id = req.params.id;
@@ -141,19 +233,25 @@ router.post('/editar/:id', async (req, res) => {
         const {
             participante_id,
             evento_id,
-            status,
-            presente
+            status
         } = req.body;
+
+        const presente =
+            req.body.presente === 'true';
+
 
         await BD.query(`
             UPDATE inscricoes
+
             SET
                 participante_id = $1,
                 evento_id = $2,
                 status = $3,
                 presente = $4
-            WHERE id = $5;
-        `, [
+
+            WHERE id = $5
+        `,
+        [
             participante_id,
             evento_id,
             status,
@@ -161,29 +259,59 @@ router.post('/editar/:id', async (req, res) => {
             id
         ]);
 
+
         res.redirect('/inscricoes');
 
     } catch (erro) {
-        console.log('Erro: ' + erro);
+
+        console.log(
+            'Erro ao atualizar inscrição: ' + erro
+        );
+
+        res.status(500).send(
+            'Erro ao atualizar inscrição'
+        );
+
     }
+
 });
 
-// excluir 
+
+// ======================================================
+// EXCLUIR INSCRIÇÃO
+// ======================================================
+
 router.post('/excluir/:id', async (req, res) => {
+
     try {
 
         const id = req.params.id;
 
+
         await BD.query(`
             DELETE FROM inscricoes
-            WHERE id = $1;
-        `, [id]);
+            WHERE id = $1
+        `,
+        [
+            id
+        ]);
+
 
         res.redirect('/inscricoes');
 
     } catch (erro) {
-        console.log('Erro: ' + erro);
+
+        console.log(
+            'Erro ao excluir inscrição: ' + erro
+        );
+
+        res.status(500).send(
+            'Erro ao excluir inscrição'
+        );
+
     }
+
 });
+
 
 module.exports = router;
