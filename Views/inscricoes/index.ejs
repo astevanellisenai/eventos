@@ -1,0 +1,28 @@
+<h1>Lista de Inscrições</h1>
+
+<a href="/admin">Voltar</a>
+
+<hr>
+
+<% inscricoes.forEach(inscricao => { %>
+
+    <h2><%= inscricao.participante %></h2>
+
+    <p>
+        <strong>Evento:</strong>
+        <%= inscricao.evento %>
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+        <%= inscricao.status %>
+    </p>
+
+    <p>
+        <strong>Presente:</strong>
+        <%= inscricao.presente ? 'Sim' : 'Não' %>
+    </p>
+
+    <hr>
+
+<% }) %>
