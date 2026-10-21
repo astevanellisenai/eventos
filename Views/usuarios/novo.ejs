@@ -1,0 +1,44 @@
+<h1>Novo Usuário</h1>
+
+<a href="/usuarios">Voltar</a>
+
+<hr>
+
+<form action="/usuarios/novo" method="POST">
+
+    <p>
+        <label>Nome:</label><br>
+        <input type="text" name="nome" required>
+    </p>
+
+    <p>
+        <label>E-mail:</label><br>
+        <input type="email" name="email" required>
+    </p>
+
+    <p>
+        <label>Senha:</label><br>
+        <input type="password" name="senha" required>
+    </p>
+
+    <p>
+        <label>Situação:</label><br>
+
+        <select name="situacao">
+
+            <option value="1">
+                Ativo
+            </option>
+
+            <option value="0">
+                Inativo
+            </option>
+
+        </select>
+    </p>
+
+    <button type="submit">
+        Salvar
+    </button>
+
+</form>
