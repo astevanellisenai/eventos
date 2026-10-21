@@ -134,7 +134,7 @@ app.use("/inscricao", exigirLogin, inscricaoRoutes);
 //logout
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/login');
+    res.redirect('/');
 });
 
 //Execução
