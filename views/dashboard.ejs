@@ -51,3 +51,12 @@
         </tr>
         <% })%>
 </table>
+<h2>Eventos com mais Inscrições</h2>
+<ol>
+    <% eventosMaisInscricoes.forEach(evento=> {%>
+        <li>
+            <%=evento.titulo%>
+            <%=evento.total%>
+        </li>
+        <%})%>
+</ol>
