@@ -23,9 +23,9 @@ app.use(session({
 
 //Rotas
 app.get("/", async (req, res) => {
-    try{
+    try {
         const resultado = await BD.query(
-        `
+            `
             SELECT
                 e.id,
                 e.titulo,
@@ -48,12 +48,12 @@ app.get("/", async (req, res) => {
             ORDER BY e.data_evento ASC
         `
         );
-         const eventosAtivos = resultado.rows;
+        const eventosAtivos = resultado.rows;
 
-         res.render('landing/index', {
+        res.render('landing/index', {
             eventosAtivos
         });
-    }catch(erro){
+    } catch (erro) {
         console.error('Erro ao buscar eventos:', erro);
         res.render('landing/index', {
             titulo: 'Conecta Eventos',
@@ -101,9 +101,101 @@ function exigirLogin(req, res, next) {
     next();
 };
 
+//Dashboard
+app.get('/dashboard', async (req, res) => {
+
+    try {
+
+        const totalEVentos = await BD.query(`
+            select count(*) as total
+            from eventos
+            `);
+
+        const totalParticipantes = await BD.query(`
+            select count(*) as total
+            from participantes
+            `);
+
+        const totalInscricoes = await BD.query(`
+            select count(*) as total
+            from inscricoes
+            `);
+
+        const usuariosAtivo = await BD.query(`
+            select count(*) as total
+            from usuarios where situacao = 1
+            ,`);
+
+        const inscricaoStatus = await BD.query(`
+            select
+                status,
+                count(*) as total
+            from inscricoes
+            group by status
+            order by status            
+        `);
+
+        const eventosCategoria = await BD.query(`
+            select
+                c.nome as categoria,
+                count(*) as total
+            from categorias c
+            let join eventos e on
+                     e.catgoria_id = c.id
+            order by c.id, c.nome
+            `);
+        const eventosMaisInscricao = await
+            BD.query(`
+                select
+                    e.titulo,
+                    count(i.id) as total
+                from eventos e
+                left join inscrioes i 
+                    on i.evento_id = e.id4
+                group by e.id, e.titulo
+                order by total desc limit 5`);
+
+        const proximoEventos = await BD.query(`
+                select
+                   id,
+                   titulo,
+                   data_evento,
+                   horario,
+                   local
+                from eventos
+                where data_evento >= CURRENT_DATE
+                order by
+                    data_evento,
+                    horario
+                limit 5
+                `);
+
+            res.render('dashboard', {
+                usuario: req.session.usuario,
+                totalEventos: 
+                    totalEventos.rows[0].total,
+                totalParticipantes: 
+                    totalParticipantes.rows[0].total,
+                totalInscricoes: 
+                    totalInscricoes.rows[0].total,
+                usuariosAtivos: 
+                    usuariosAtivo.rows[0].total,
+                inscricaoStatus:
+                    inscricaoStatus.rows,
+                eventosCategoria: eventosCategoria.rows,
+                eventosMaisInscricoes:
+                    eventosMaisInscricao.rows,
+                proximosEVentos: proximoEventos.rows
+            });
+
+    } catch (erro) {
+        console.log('Erro: ' + erro);
+    }
+});
+
 //Rota Administrativa
 app.get("/admin", exigirLogin, (req, res) => {
-    res.render("admin",{usuario: req.session.usuario});
+    res.render("admin", { usuario: req.session.usuario });
 });
 
 //Rotas Categorias
