@@ -26,3 +26,28 @@
         <%=usuariosAtivos%>
     </strong>
 </p>
+<h2>Próximos Eventos</h2>
+<table border="1">
+    <tr>
+        <th>EVentos</th>
+        <th>Data</th>
+        <th>Horário</th>
+        <th>Local</th>
+    </tr>
+    <% proximosEventos.forEach(evento=> {%>
+        <tr>
+            <td>
+                <%=evento.titulo%>
+            </td>
+            <td>
+                <%=evento.data_evento%>
+            </td>
+            <td>
+                <%=evento.horario%>
+            </td>
+            <td>
+                <%=evento.local%>
+            </td>
+        </tr>
+        <% })%>
+</table>
