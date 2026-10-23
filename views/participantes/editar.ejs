@@ -1,0 +1,31 @@
+<h1>Editar Participante</h1>
+
+<a href="/participantes">Voltar</a>
+
+<hr>
+
+<form action="/participantes/editar/<%= participante.id %>" method="POST">
+
+    <p>
+        <label>Nome:</label><br>
+
+        <input type="text" name="nome" value="<%= participante.nome %>" required>
+    </p>
+
+    <p>
+        <label>E-mail:</label><br>
+
+        <input type="email" name="email" value="<%= participante.email %>" required>
+    </p>
+
+    <p>
+        <label>Telefone:</label><br>
+
+        <input type="text" name="telefone" value="<%= participante.telefone || '' %>">
+    </p>
+
+    <button type="submit">
+        Atualizar
+    </button>
+
+</form>
