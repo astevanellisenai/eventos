@@ -1,0 +1,25 @@
+<h1>Nova Categoria</h1>
+
+<a href="/categorias">Voltar</a>
+
+<hr>
+
+<form action="/categorias/novo" method="POST">
+
+    <p>
+        <label>Nome:</label><br>
+
+        <input type="text" name="nome" required>
+    </p>
+
+    <p>
+        <label>Descrição:</label><br>
+
+        <textarea name="descricao" rows="5" cols="40"></textarea>
+    </p>
+
+    <button type="submit">
+        Salvar
+    </button>
+
+</form>
