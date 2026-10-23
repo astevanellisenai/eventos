@@ -1,0 +1,133 @@
+<h1>Novo Evento</h1>
+
+<a href="/eventos">Voltar</a>
+
+<hr>
+
+<form action="/eventos/novo" method="POST">
+
+    <p>
+        <label>Título:</label><br>
+
+        <input
+            type="text"
+            name="titulo"
+            required
+        >
+    </p>
+
+    <p>
+        <label>Descrição:</label><br>
+
+        <textarea
+            name="descricao"
+            rows="5"
+            cols="40"
+        ></textarea>
+    </p>
+
+    <p>
+        <label>Data:</label><br>
+
+        <input
+            type="date"
+            name="data_evento"
+            required
+        >
+    </p>
+
+    <p>
+        <label>Horário:</label><br>
+
+        <input
+            type="time"
+            name="horario"
+            required
+        >
+    </p>
+
+    <p>
+        <label>Local:</label><br>
+
+        <input
+            type="text"
+            name="local"
+            required
+        >
+    </p>
+
+    <p>
+        <label>Quantidade de Vagas:</label><br>
+
+        <input
+            type="number"
+            name="quantidade_vagas"
+            min="1"
+            required
+        >
+    </p>
+
+    <p>
+        <label>URL da Imagem:</label><br>
+
+        <input
+            type="text"
+            name="imagem_url"
+        >
+    </p>
+
+    <p>
+        <label>Categoria:</label><br>
+
+        <select
+            name="categoria_id"
+            required
+        >
+
+            <option value="">
+                Selecione
+            </option>
+
+            <% categorias.forEach(categoria => { %>
+
+                <option value="<%= categoria.id %>">
+
+                    <%= categoria.nome %>
+
+                </option>
+
+            <% }) %>
+
+        </select>
+    </p>
+
+    <p>
+        <label>Organizador:</label><br>
+
+        <select
+            name="organizador_id"
+            required
+        >
+
+            <option value="">
+                Selecione
+            </option>
+
+            <% usuarios.forEach(usuario => { %>
+
+                <option value="<%= usuario.id %>">
+
+                    <%= usuario.nome %>
+
+                </option>
+
+            <% }) %>
+
+        </select>
+    </p>
+
+    <button type="submit">
+        Salvar
+    </button>
+
+</form>
