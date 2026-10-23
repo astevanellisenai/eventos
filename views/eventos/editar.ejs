@@ -1,0 +1,94 @@
+<h1>Editar Evento</h1>
+
+<a href="/eventos">Voltar</a>
+
+<hr>
+
+<form action="/eventos/editar/<%= evento.id %>" method="POST">
+
+    <p>
+        <label>Título:</label><br>
+
+        <input type="text" name="titulo" value="<%= evento.titulo %>" required>
+    </p>
+
+    <p>
+        <label>Descrição:</label><br>
+
+        <textarea name="descricao" rows="5" cols="40"><%= evento.descricao %></textarea>
+    </p>
+
+    <p>
+        <label>Data:</label><br>
+
+        <input type="date" name="data_evento"
+            value="<%= evento.data_evento ? new Date(evento.data_evento).toISOString().split('T')[0] : '' %>" required>
+    </p>
+
+    <p>
+        <label>Horário:</label><br>
+
+        <input type="time" name="horario" value="<%= evento.horario %>" required>
+    </p>
+
+    <p>
+        <label>Local:</label><br>
+
+        <input type="text" name="local" value="<%= evento.local %>" required>
+    </p>
+
+    <p>
+        <label>Quantidade de Vagas:</label><br>
+
+        <input type="number" name="quantidade_vagas" value="<%= evento.quantidade_vagas %>" min="1" required>
+    </p>
+
+    <p>
+        <label>URL da Imagem:</label><br>
+
+        <input type="text" name="imagem_url" value="<%= evento.imagem_url || '' %>">
+    </p>
+
+    <p>
+        <label>Categoria:</label><br>
+
+        <select name="categoria_id" required>
+
+            <% categorias.forEach(categoria=> { %>
+
+                <option value="<%= categoria.id %>" <%=categoria.id==evento.categoria_id ? 'selected' : '' %>
+                    >
+
+                    <%= categoria.nome %>
+
+                </option>
+
+                <% }) %>
+
+        </select>
+    </p>
+
+    <p>
+        <label>Organizador:</label><br>
+
+        <select name="organizador_id" required>
+
+            <% usuarios.forEach(usuario=> { %>
+
+                <option value="<%= usuario.id %>" <%=usuario.id==evento.organizador_id ? 'selected' : '' %>
+                    >
+
+                    <%= usuario.nome %>
+
+                </option>
+
+                <% }) %>
+
+        </select>
+    </p>
+
+    <button type="submit">
+        Atualizar
+    </button>
+
+</form>
