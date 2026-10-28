@@ -18,7 +18,8 @@ router.get('/', async (req, res) => {
         `);
 
         res.render('categorias/index', {
-            categorias: resultado.rows
+            categorias: resultado.rows,
+            usuario: req.session.usuario
         });
 
     }

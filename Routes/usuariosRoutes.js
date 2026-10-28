@@ -8,9 +8,7 @@ const BD = require('../db');
 // ============================================
 
 router.get('/', async (req, res) => {
-
     try {
-
         const resultado = await BD.query(`
             SELECT
                 id,
@@ -20,21 +18,20 @@ router.get('/', async (req, res) => {
                 criado_em
             FROM usuarios
             ORDER BY nome
-        `);
-
+        `); 
         res.render('usuarios/index', {
-            usuarios: resultado.rows
+            usuarios: resultado.rows,
+            usuario: req.session.usuario
         });
-
     }
     catch (erro) {
-
         console.log('Erro ao listar usuários: ' + erro);
-
         res.status(500).send(
             'Erro ao carregar usuários'
-        );
-
+        ).render('usuarios/index', {
+            usuarios: [],
+            usuario: req.session.usuario
+        }); 
     }
 
 });
@@ -45,7 +42,6 @@ router.get('/', async (req, res) => {
 // ============================================
 
 router.get('/novo', (req, res) => {
-
     res.render('usuarios/novo');
 
 });

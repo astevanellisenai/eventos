@@ -86,7 +86,7 @@ app.post('/login', async (req, res) => {
         }
 
         req.session.usuario = resultado.rows[0];
-        res.redirect('/admin');
+        res.redirect('/dashboard');
 
     } catch (erro) {
         console.log('Erro: ' + erro);

@@ -38,7 +38,8 @@ router.get('/', async (req, res) => {
         `);
 
         res.render('eventos/index', {
-            eventos: resultado.rows
+            eventos: resultado.rows,
+            usuario: req.session.usuario
         });
 
     } catch (erro) {
