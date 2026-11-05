@@ -1,71 +1,41 @@
-<%-include("../includes/header", {titulo: "Eventos", usuario}) %>
-<h1>Lista de Eventos</h1>
-
-<a href="/admin">Voltar</a>
-
-<br><br>
-
-<a href="/eventos/novo">
-    Novo Evento
-</a>
-
-<hr>
-
-<% eventos.forEach(evento=> { %>
-
-    <h2>
-        <%= evento.titulo %>
-    </h2>
-
-    <p>
-        <strong>Descrição:</strong>
-        <%= evento.descricao %>
-    </p>
-
-    <p>
-        <strong>Data:</strong>
-        <%= evento.data_evento %>
-    </p>
-
-    <p>
-        <strong>Horário:</strong>
-        <%= evento.horario %>
-    </p>
-
-    <p>
-        <strong>Local:</strong>
-        <%= evento.local %>
-    </p>
-
-    <p>
-        <strong>Vagas:</strong>
-        <%= evento.quantidade_vagas %>
-    </p>
-
-    <p>
-        <strong>Categoria:</strong>
-        <%= evento.categoria %>
-    </p>
-
-    <p>
-        <strong>Organizador:</strong>
-        <%= evento.organizador %>
-    </p>
-
-    <p>
-        <a href="/eventos/editar/<%= evento.id %>">
-            Editar
-        </a>
-
-        |
-
-        <a href="/eventos/excluir/<%= evento.id %>">
-            Excluir
-        </a>
-    </p>
-
-    <hr>
-
-    <% }) %>
-
-<%-include("../includes/footer") %>
+<%- include('../includes/header', { titulo: 'Eventos', usuario }) %>
+<main class="conteudo">
+    <div class="cabecalho-conteudo">
+        <div>
+            <h1>Eventos</h1>
+            <p>Gerencie os eventos e seus organizadores.</p>
+        </div>
+        <a class="btn btn-primario" href="/eventos/novo">+ Novo evento</a>
+    </div>
+    <div class="tabela-container">
+        <table>
+            <thead>
+                <tr><th>Evento</th><th>Data / Horário</th><th>Local</th><th>Vagas</th><th>Categoria</th><th>Organizador</th><th>Ações</th></tr>
+            </thead>
+            <tbody>
+                <% eventos.forEach(evento => { %>
+                    <tr>
+                        <td>
+                            <strong><%= evento.titulo %></strong>
+                            <p><%= evento.descricao || '' %></p>
+                        </td>
+                        <td><%= new Date(evento.data_evento).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) %> <%= String(evento.horario).slice(0,5) %></td>
+                        <td><%= evento.local %></td>
+                        <td><%= evento.quantidade_vagas %></td>
+                        <td><%= evento.categoria %></td>
+                        <td><%= evento.organizador %></td>
+                        <td class="acoes">
+                            <a class="btn btn-sucesso btn-sm" href="/eventos/editar/<%= evento.id %>">Editar</a>
+                            <a class="btn btn-danger btn-sm" href="/eventos/excluir/<%= evento.id %>"
+                               onclick="return confirm('Deseja realmente excluir este evento?')">Deletar</a>
+                        </td>
+                    </tr>
+                <% }) %>
+                <% if (eventos.length === 0) { %>
+                    <tr><td colspan="7">Nenhum evento cadastrado.</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</main>
+<%- include('../includes/footer.ejs') %>
