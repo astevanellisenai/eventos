@@ -1,50 +1,34 @@
-<%- include("../includes/header", {titulo: "Usuários", usuario}) %>
-
-<h1>Lista de Usuários</h1>
-
-<a href="/admin">Voltar</a>
-<br><br>
-
-<a href="/usuarios/novo">
-    Novo Usuário
-</a>
-
-<hr>
-
-<% if(usuarios.length > 0 ){ %>
-    <% usuarios.forEach(usuario=> { %>
-
-    <h2>
-        <%= usuario.nome %>
-    </h2>
-
-    <p>
-        <strong>E-mail:</strong>
-        <%= usuario.email %>
-    </p>
-
-    <p>
-        <strong>Situação:</strong>
-        <%= usuario.situacao==1 ? 'Ativo' : 'Inativo' %>
-    </p>
-
-    <p>
-        <a href="/usuarios/editar/<%= usuario.id %>">
-            Editar
-        </a>
-
-        |
-
-        <a href="/usuarios/excluir/<%= usuario.id %>">
-            Excluir
-        </a>
-    </p>
-
-    <hr>
-    <% }) %>
-<%}else{%>
-    <p>Nenhum usuario cadastrado</p>
-<%}%>
-
-<%- include("../includes/footer") %>
-
+<%- include('../includes/header', { titulo: 'Usuários', usuario }) %>
+<main class="conteudo">
+    <div class="cabecalho-conteudo">
+        <div>
+            <h1>Usuários</h1>
+            <p>Gerencie os usuários e a situação de acesso.</p>
+        </div>
+        <a class="btn btn-primario" href="/usuarios/novo">+ Novo usuário</a>
+    </div>
+    <div class="tabela-container">
+        <table>
+            <thead><tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Situação</th><th>Ações</th></tr></thead>
+            <tbody>
+                <% usuarios.forEach(u => { %>
+                    <tr>
+                        <td><%= u.id %></td>
+                        <td><strong><%= u.nome %></strong></td>
+                        <td><%= u.email %></td>
+                        <td><%= u.situacao == 1 ? 'Ativo' : 'Inativo' %></td>
+                        <td class="acoes">
+                            <a class="btn btn-sucesso btn-sm" href="/usuarios/editar/<%= u.id %>">Editar</a>
+                            <a class="btn btn-danger btn-sm" href="/usuarios/excluir/<%= u.id %>"
+                               onclick="return confirm('Deseja realmente excluir este usuário?')">Deletar</a>
+                        </td>
+                    </tr>
+                <% }) %>
+                <% if (usuarios.length === 0) { %>
+                    <tr><td colspan="5">Nenhum usuário cadastrado.</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</main>
+<%- include('../includes/footer.ejs') %>
