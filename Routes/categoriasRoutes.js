@@ -9,23 +9,58 @@ const BD = require('../db');
 
 router.get('/', async (req, res) => {
     try {
+        const busca = String(req.query.busca || '').trim();
+        const ordem = String(req.query.ordem || 'nome');
+
+        const opcoesOrdenacao = {
+            nome: 'nome ASC',
+            nome_desc: 'nome DESC',
+            id: 'id ASC',
+            id_desc: 'id DESC'
+        };
+        const ordenarPor = opcoesOrdenacao[ordem] || opcoesOrdenacao.nome;
+
+        const paginaRecebida = Number(req.query.pagina);
+        let pagina = Number.isSafeInteger(paginaRecebida) && paginaRecebida > 0
+            ? paginaRecebida
+            : 1;
+
+        const limite = 5;
+        const pesquisa = `%${busca}%`;
+
+        const totalResultado = await BD.query(`
+            SELECT COUNT(*) AS total
+            FROM categorias
+            WHERE nome ILIKE $1
+               OR COALESCE(descricao, '') ILIKE $1
+        `, [pesquisa]);
+
+        const totalRegistros = Number(totalResultado.rows[0].total);
+        const totalPaginas = Math.max(1, Math.ceil(totalRegistros / limite));
+        pagina = Math.min(pagina, totalPaginas);
+        const offset = (pagina - 1) * limite;
+
         const resultado = await BD.query(`
             SELECT *
             FROM categorias
-            ORDER BY nome
-        `);
+            WHERE nome ILIKE $1
+               OR COALESCE(descricao, '') ILIKE $1
+            ORDER BY ${ordenarPor}, id ASC
+            LIMIT $2 OFFSET $3
+        `, [pesquisa, limite, offset]);
+
         res.render('categorias/index', {
             categorias: resultado.rows,
-            usuario: req.session.usuario
+            usuario: req.session.usuario,
+            busca,
+            ordem: opcoesOrdenacao[ordem] ? ordem : 'nome',
+            pagina,
+            totalPaginas,
+            totalRegistros
         });
-    }
-    catch (erro) {
-        console.log(
-            'Erro ao listar categorias: ' + erro
-        );
-        res.status(500).send(
-            'Erro ao carregar categorias'
-        );
+    } catch (erro) {
+        console.log('Erro ao listar categorias:', erro);
+        res.status(500).send('Erro ao carregar categorias');
     }
 });
 
