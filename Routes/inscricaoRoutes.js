@@ -34,7 +34,8 @@ router.get('/', async (req, res) => {
         `);
 
         res.render('inscricoes/index', {
-            inscricoes: resultado.rows
+            inscricoes: resultado.rows,
+            usuario: req.session.usuario
         });
 
     } catch (erro) {
@@ -75,7 +76,8 @@ router.get('/novo', async (req, res) => {
         res.render('inscricoes/novo', {
 
             participantes: participantes.rows,
-            eventos: eventos.rows
+            eventos: eventos.rows,
+            usuario: req.session.usuario
 
         });
 
@@ -201,7 +203,8 @@ router.get('/editar/:id', async (req, res) => {
 
             inscricao: inscricao.rows[0],
             participantes: participantes.rows,
-            eventos: eventos.rows
+            eventos: eventos.rows,
+            usuario: req.session.usuario
 
         });
 
