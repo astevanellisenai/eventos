@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
 // ============================================
 
 router.get('/novo', (req, res) => {
-    res.render('usuarios/novo');
+    res.render('usuarios/novo', { usuario: req.session.usuario });
 
 });
 
@@ -131,7 +131,8 @@ router.get('/editar/:id', async (req, res) => {
         }
 
         res.render('usuarios/editar', {
-            usuario: resultado.rows[0]
+            usuarioEditado: resultado.rows[0],
+            usuario: req.session.usuario
         });
 
     }
