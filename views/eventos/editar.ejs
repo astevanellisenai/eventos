@@ -1,94 +1,70 @@
-<h1>Editar Evento</h1>
-
-<a href="/eventos">Voltar</a>
-
-<hr>
-
-<form action="/eventos/editar/<%= evento.id %>" method="POST">
-
-    <p>
-        <label>Título:</label><br>
-
-        <input type="text" name="titulo" value="<%= evento.titulo %>" required>
-    </p>
-
-    <p>
-        <label>Descrição:</label><br>
-
-        <textarea name="descricao" rows="5" cols="40"><%= evento.descricao %></textarea>
-    </p>
-
-    <p>
-        <label>Data:</label><br>
-
-        <input type="date" name="data_evento"
-            value="<%= evento.data_evento ? new Date(evento.data_evento).toISOString().split('T')[0] : '' %>" required>
-    </p>
-
-    <p>
-        <label>Horário:</label><br>
-
-        <input type="time" name="horario" value="<%= evento.horario %>" required>
-    </p>
-
-    <p>
-        <label>Local:</label><br>
-
-        <input type="text" name="local" value="<%= evento.local %>" required>
-    </p>
-
-    <p>
-        <label>Quantidade de Vagas:</label><br>
-
-        <input type="number" name="quantidade_vagas" value="<%= evento.quantidade_vagas %>" min="1" required>
-    </p>
-
-    <p>
-        <label>URL da Imagem:</label><br>
-
-        <input type="text" name="imagem_url" value="<%= evento.imagem_url || '' %>">
-    </p>
-
-    <p>
-        <label>Categoria:</label><br>
-
-        <select name="categoria_id" required>
-
-            <% categorias.forEach(categoria=> { %>
-
-                <option value="<%= categoria.id %>" <%=categoria.id==evento.categoria_id ? 'selected' : '' %>
-                    >
-
-                    <%= categoria.nome %>
-
-                </option>
-
-                <% }) %>
-
-        </select>
-    </p>
-
-    <p>
-        <label>Organizador:</label><br>
-
-        <select name="organizador_id" required>
-
-            <% usuarios.forEach(usuario=> { %>
-
-                <option value="<%= usuario.id %>" <%=usuario.id==evento.organizador_id ? 'selected' : '' %>
-                    >
-
-                    <%= usuario.nome %>
-
-                </option>
-
-                <% }) %>
-
-        </select>
-    </p>
-
-    <button type="submit">
-        Atualizar
-    </button>
-
-</form>
+<%- include('../includes/header', { titulo: 'Editar evento', usuario }) %>
+<main class="conteudo">
+    <div class="cabecalho-conteudo">
+        <div>
+            <h1>Editar evento</h1>
+            <p>Atualize o evento selecionado.</p>
+        </div>
+    </div>
+    <div class="card">
+        <form action="/eventos/editar/<%= evento.id %>" method="POST">
+            <div class="campo-formulario">
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" name="titulo" value="<%= evento.titulo %>" required>
+            </div>
+            <div class="campo-formulario">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" name="descricao" rows="4"><%= evento.descricao || '' %></textarea>
+            </div>
+            <div class="campo-formulario">
+                <label for="data_evento">Data</label>
+                <input type="date" id="data_evento" name="data_evento"
+                       value="<%= evento.data_evento ? new Date(evento.data_evento).toISOString().split('T')[0] : '' %>" required>
+            </div>
+            <div class="campo-formulario">
+                <label for="horario">Horário</label>
+                <input type="time" id="horario" name="horario"
+                       value="<%= String(evento.horario || '').slice(0, 5) %>" required>
+            </div>
+            <div class="campo-formulario">
+                <label for="local">Local</label>
+                <input type="text" id="local" name="local" value="<%= evento.local %>" required>
+            </div>
+            <div class="campo-formulario">
+                <label for="quantidade_vagas">Quantidade de vagas</label>
+                <input type="number" id="quantidade_vagas" name="quantidade_vagas"
+                       value="<%= evento.quantidade_vagas %>" min="1" required>
+            </div>
+            <div class="campo-formulario">
+                <label for="imagem_url">URL da imagem</label>
+                <input type="text" id="imagem_url" name="imagem_url"
+                       value="<%= evento.imagem_url || '' %>">
+            </div>
+            <div class="campo-formulario">
+                <label for="categoria_id">Categoria</label>
+                <select id="categoria_id" name="categoria_id" required>
+                    <option value="">Selecione</option>
+                    <% categorias.forEach(item => { %>
+                        <option value="<%= item.id %>"
+                            <%= item.id == evento.categoria_id ? 'selected' : '' %>><%= item.nome %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="campo-formulario">
+                <label for="organizador_id">Organizador</label>
+                <select id="organizador_id" name="organizador_id" required>
+                    <option value="">Selecione</option>
+                    <% usuarios.forEach(item => { %>
+                        <option value="<%= item.id %>"
+                            <%= item.id == evento.organizador_id ? 'selected' : '' %>><%= item.nome %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="botoes-formulario">
+                <a class="btn btn-muted" href="/eventos">Cancelar</a>
+                <button class="btn btn-primario" type="submit">Atualizar</button>
+            </div>
+        </form>
+    </div>
+</main>
+<%- include('../includes/footer.ejs') %>
