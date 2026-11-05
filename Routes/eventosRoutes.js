@@ -78,7 +78,8 @@ router.get('/novo', async (req, res) => {
         res.render('eventos/novo', {
 
             categorias: categorias.rows,
-            usuarios: usuarios.rows
+            usuarios: usuarios.rows,
+            usuario: req.session.usuario
 
         });
 
@@ -223,7 +224,8 @@ router.get('/editar/:id', async (req, res) => {
 
             categorias: categorias.rows,
 
-            usuarios: usuarios.rows
+            usuarios: usuarios.rows,
+            usuario: req.session.usuario
 
         });
 
