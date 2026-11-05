@@ -23,7 +23,8 @@ router.get('/', async (req, res) => {
         `);
 
         res.render('participantes/index', {
-            participantes: resultado.rows
+            participantes: resultado.rows,
+            usuario: req.session.usuario
         });
 
     }
@@ -45,7 +46,7 @@ router.get('/', async (req, res) => {
 
 router.get('/novo', (req, res) => {
 
-    res.render('participantes/novo');
+    res.render('participantes/novo', { usuario: req.session.usuario });
 
 });
 
@@ -130,7 +131,8 @@ router.get('/editar/:id', async (req, res) => {
         }
 
         res.render('participantes/editar', {
-            participante: resultado.rows[0]
+            participante: resultado.rows[0],
+            usuario: req.session.usuario
         });
 
     }
