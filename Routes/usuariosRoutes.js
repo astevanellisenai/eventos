@@ -232,7 +232,7 @@ router.post('/editar/:id', async (req, res) => {
 // EXCLUIR USUÁRIO
 // ============================================
 
-router.get('/excluir/:id', async (req, res) => {
+router.post('/excluir/:id', async (req, res) => {
 
     const id = req.params.id;
 

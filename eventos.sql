@@ -77,13 +77,9 @@ CREATE TABLE eventos (
 
 CREATE TABLE participantes (
     id SERIAL PRIMARY KEY,
-
     nome VARCHAR(120) NOT NULL,
-
     email VARCHAR(150) NOT NULL UNIQUE,
-
     telefone VARCHAR(20),
-
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
