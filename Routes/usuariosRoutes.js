@@ -9,36 +9,61 @@ const BD = require('../db');
 
 router.get('/', async (req, res) => {
     try {
+        const busca = String(req.query.busca || '').trim();
+        const ordem = String(req.query.ordem || 'nome');
+        const ordenacoes = {
+            nome: 'u.nome ASC',
+            nome_desc: 'u.nome DESC',
+            id: 'u.id ASC',
+            id_desc: 'u.id DESC',
+            situacao: 'u.situacao DESC'
+        };
+        const ordenarPor = ordenacoes[ordem] || ordenacoes.nome;
+        const paginaRecebida = Number(req.query.pagina);
+        let pagina = Number.isSafeInteger(paginaRecebida) && paginaRecebida > 0
+            ? paginaRecebida : 1;
+
+        const limite = 5;
+        const pesquisa = `%${busca}%`;
+
+        const totalResultado = await BD.query(`
+            SELECT COUNT(*) AS total
+            FROM usuarios u
+            WHERE u.nome ILIKE $1
+                OR u.email ILIKE $1
+        `, [pesquisa]);
+
+        const totalRegistros = Number(totalResultado.rows[0].total);
+        const totalPaginas = Math.max(1, Math.ceil(totalRegistros / limite));
+        pagina = Math.min(pagina, totalPaginas);
+        const offset = (pagina - 1) * limite;
+
         const resultado = await BD.query(`
-            SELECT
-                id,
-                nome,
-                email,
-                situacao,
-                criado_em
-            FROM usuarios
-            ORDER BY nome
-        `); 
+            SELECT u.id, u.nome, u.email, u.situacao, u.criado_em FROM usuarios u
+            WHERE u.nome ILIKE $1
+                OR u.email ILIKE $1
+            ORDER BY ${ordenarPor}, u.id ASC
+            LIMIT $2 OFFSET $3
+        `, [pesquisa, limite, offset]);
+
         res.render('usuarios/index', {
             usuarios: resultado.rows,
-            usuario: req.session.usuario
+            usuario: req.session.usuario,
+            busca,
+            ordem: ordenacoes[ordem] ? ordem : 'nome',
+            pagina,
+            totalPaginas,
+            totalRegistros
         });
+    } catch (erro) {
+        console.error('Erro ao listar usuarios:', erro);
+        res.status(500).send('Erro ao carregar usuarios');
     }
-    catch (erro) {
-        console.log('Erro ao listar usuários: ' + erro);
-        res.status(500).send(
-            'Erro ao carregar usuários'
-        ).render('usuarios/index', {
-            usuarios: [],
-            usuario: req.session.usuario
-        }); 
-    }
-
 });
 
 
 // ============================================
-// ABRIR TELA NOVO USUÁRIO
+// ABRIR FORMULÁRIO
 // ============================================
 
 router.get('/novo', (req, res) => {
