@@ -7,6 +7,22 @@
         </div>
         <a class="btn btn-primario" href="/participantes/novo">+ Novo participante</a>
     </div>
+    <!-- Pesquisa e ordenação -->
+    <form method="GET" action="/participantes"
+          style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:20px 0;">
+        <input type="text" name="busca" placeholder="Pesquisar registros"
+               value="<%= busca %>" style="padding:9px; min-width:240px;">
+        <select name="ordem" style="padding:9px;">
+            <option value="nome" <%= ordem === 'nome' ? 'selected' : '' %>>Nome A-Z</option>
+            <option value="nome_desc" <%= ordem === 'nome_desc' ? 'selected' : '' %>>Nome Z-A</option>
+            <option value="id" <%= ordem === 'id' ? 'selected' : '' %>>ID crescente</option>
+            <option value="id_desc" <%= ordem === 'id_desc' ? 'selected' : '' %>>ID decrescente</option>
+        </select>
+        <button type="submit" class="btn btn-primario">Pesquisar</button>
+        <a href="/participantes" class="btn btn-muted">Limpar</a>
+    </form>
+    <p style="margin-bottom:12px;">Total encontrado: <strong><%= totalRegistros %></strong></p>
+
     <div class="tabela-container">
         <table>
             <thead>
@@ -31,6 +47,18 @@
                 <% } %>
             </tbody>
         </table>
+    </div>
+    <!-- Paginação com preservação dos filtros -->
+    <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:20px 0;">
+        <% if (pagina > 1) { %>
+            <a class="btn btn-secundario"
+               href="/participantes?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina - 1 %>">Anterior</a>
+        <% } %>
+        <span>Página <strong><%= pagina %></strong> de <strong><%= totalPaginas %></strong></span>
+        <% if (pagina < totalPaginas) { %>
+            <a class="btn btn-secundario"
+               href="/participantes?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina + 1 %>">Próxima</a>
+        <% } %>
     </div>
 </main>
 <%- include('../includes/footer.ejs') %>
