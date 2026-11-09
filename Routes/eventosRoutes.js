@@ -8,56 +8,70 @@ const BD = require('../db');
 // ======================================================
 
 router.get('/', async (req, res) => {
-
     try {
+        const busca = String(req.query.busca || '').trim();
+        const ordem = String(req.query.ordem || 'data');
+        const ordenacoes = {
+            data: 'e.data_evento ASC',
+            data_desc: 'e.data_evento DESC',
+            titulo: 'e.titulo ASC',
+            titulo_desc: 'e.titulo DESC',
+            id: 'e.id ASC',
+            id_desc: 'e.id DESC'
+        };
+        const ordenarPor = ordenacoes[ordem] || ordenacoes.data;
+        const paginaRecebida = Number(req.query.pagina);
+        let pagina = Number.isSafeInteger(paginaRecebida) && paginaRecebida > 0
+            ? paginaRecebida : 1;
+
+        const limite = 5;
+        const pesquisa = `%${busca}%`;
+
+        const totalResultado = await BD.query(`
+            SELECT COUNT(*) AS total
+            FROM eventos e INNER JOIN categorias c ON e.categoria_id = c.id INNER JOIN usuarios u ON e.organizador_id = u.id
+            WHERE e.titulo ILIKE $1
+                OR COALESCE(e.descricao, '') ILIKE $1
+                OR e.local ILIKE $1
+                OR c.nome ILIKE $1
+                OR u.nome ILIKE $1
+        `, [pesquisa]);
+
+        const totalRegistros = Number(totalResultado.rows[0].total);
+        const totalPaginas = Math.max(1, Math.ceil(totalRegistros / limite));
+        pagina = Math.min(pagina, totalPaginas);
+        const offset = (pagina - 1) * limite;
 
         const resultado = await BD.query(`
-            SELECT
-                e.id,
-                e.titulo,
-                e.descricao,
-                e.data_evento,
-                e.horario,
-                e.local,
-                e.quantidade_vagas,
-                e.imagem_url,
-                e.categoria_id,
-                e.organizador_id,
-                c.nome AS categoria,
-                u.nome AS organizador
-
-            FROM eventos e
-
-            INNER JOIN categorias c
-                ON e.categoria_id = c.id
-
-            INNER JOIN usuarios u
-                ON e.organizador_id = u.id
-
-            ORDER BY e.id
-        `);
+            SELECT e.id, e.titulo, e.descricao, e.data_evento, e.horario, e.local, e.quantidade_vagas, e.imagem_url, e.categoria_id, e.organizador_id, c.nome AS categoria, u.nome AS organizador FROM eventos e INNER JOIN categorias c ON e.categoria_id = c.id INNER JOIN usuarios u ON e.organizador_id = u.id
+            WHERE e.titulo ILIKE $1
+                OR COALESCE(e.descricao, '') ILIKE $1
+                OR e.local ILIKE $1
+                OR c.nome ILIKE $1
+                OR u.nome ILIKE $1
+            ORDER BY ${ordenarPor}, e.id ASC
+            LIMIT $2 OFFSET $3
+        `, [pesquisa, limite, offset]);
 
         res.render('eventos/index', {
             eventos: resultado.rows,
-            usuario: req.session.usuario
+            usuario: req.session.usuario,
+            busca,
+            ordem: ordenacoes[ordem] ? ordem : 'data',
+            pagina,
+            totalPaginas,
+            totalRegistros
         });
-
     } catch (erro) {
-
-        console.log('Erro ao listar eventos: ' + erro);
-
-        res.status(500).send(
-            'Erro ao carregar eventos'
-        );
-
+        console.error('Erro ao listar eventos:', erro);
+        res.status(500).send('Erro ao carregar eventos');
     }
-
 });
 
 
-// ======================================================
-// ABRIR TELA NOVO EVENTO
-// ======================================================
+// ============================================
+// ABRIR FORMULÁRIO
+// ============================================
 
 router.get('/novo', async (req, res) => {
 
