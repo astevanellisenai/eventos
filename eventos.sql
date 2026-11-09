@@ -13,11 +13,8 @@ CREATE TABLE usuarios (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
-
     situacao INTEGER NOT NULL DEFAULT 1,
-
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT chk_usuario_situacao
         CHECK (situacao IN (0, 1))
 );

@@ -1,63 +1,106 @@
-<%- include('../includes/header', { titulo: 'Usuários', usuario }) %>
-<main class="conteudo">
-    <div class="cabecalho-conteudo">
-        <div>
-            <h1>Usuários</h1>
-            <p>Gerencie os usuários e a situação de acesso.</p>
+<%- include('../includes/header', { titulo: 'Usuários' , usuario }) %>
+    <main class="conteudo">
+        <div class="cabecalho-conteudo">
+            <div>
+                <h1>Usuários</h1>
+                <p>Gerencie os usuários e a situação de acesso.</p>
+            </div>
+            <a class="btn btn-primario" href="/usuarios/novo">+ Novo usuário</a>
         </div>
-        <a class="btn btn-primario" href="/usuarios/novo">+ Novo usuário</a>
-    </div>
-    <!-- Pesquisa e ordenação -->
-    <form method="GET" action="/usuarios"
-          style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:20px 0;">
-        <input type="text" name="busca" placeholder="Pesquisar registros"
-               value="<%= busca %>" style="padding:9px; min-width:240px;">
-        <select name="ordem" style="padding:9px;">
-            <option value="nome" <%= ordem === 'nome' ? 'selected' : '' %>>Nome A-Z</option>
-            <option value="nome_desc" <%= ordem === 'nome_desc' ? 'selected' : '' %>>Nome Z-A</option>
-            <option value="id" <%= ordem === 'id' ? 'selected' : '' %>>ID crescente</option>
-            <option value="id_desc" <%= ordem === 'id_desc' ? 'selected' : '' %>>ID decrescente</option>
-            <option value="situacao" <%= ordem === 'situacao' ? 'selected' : '' %>>Ativos primeiro</option>
-        </select>
-        <button type="submit" class="btn btn-primario">Pesquisar</button>
-        <a href="/usuarios" class="btn btn-muted">Limpar</a>
-    </form>
-    <p style="margin-bottom:12px;">Total encontrado: <strong><%= totalRegistros %></strong></p>
+        <!-- Pesquisa e ordenação -->
+        <form method="GET" action="/usuarios" class="barra-filtros">
 
-    <div class="tabela-container">
-        <table>
-            <thead><tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Situação</th><th>Ações</th></tr></thead>
-            <tbody>
-                <% usuarios.forEach(u => { %>
+            <input type="text" name="busca" class="campo-pesquisa" placeholder="Pesquisar registros"
+                aria-label="Pesquisar registros" value="<%= busca %>">
+
+            <select name="ordem" class="campo-ordenacao" aria-label="Ordenar registros">
+                <option value="nome" <%=ordem==='nome' ? 'selected' : '' %>>Nome A-Z</option>
+                <option value="nome_desc" <%=ordem==='nome_desc' ? 'selected' : '' %>>Nome Z-A</option>
+                <option value="id" <%=ordem==='id' ? 'selected' : '' %>>ID crescente</option>
+                <option value="id_desc" <%=ordem==='id_desc' ? 'selected' : '' %>>ID decrescente</option>
+                <option value="situacao" <%=ordem==='situacao' ? 'selected' : '' %>>Ativos primeiro</option>
+            </select>
+
+            <button type="submit" class="btn btn-primario">
+                Pesquisar
+            </button>
+
+            <a href="/usuarios" class="btn btn-muted">
+                Limpar
+            </a>
+
+        </form>
+        <p style="margin-bottom:12px;">Total encontrado: <strong>
+                <%= totalRegistros %>
+            </strong></p>
+
+        <div class="tabela-container">
+            <table>
+                <thead>
                     <tr>
-                        <td><%= u.id %></td>
-                        <td><strong><%= u.nome %></strong></td>
-                        <td><%= u.email %></td>
-                        <td><%= u.situacao == 1 ? 'Ativo' : 'Inativo' %></td>
-                        <td class="acoes">
-                            <a class="btn btn-sucesso btn-sm" href="/usuarios/editar/<%= u.id %>">Editar</a>
-                            <a class="btn btn-danger btn-sm" href="/usuarios/excluir/<%= u.id %>"
-                               onclick="return confirm('Deseja realmente excluir este usuário?')">Deletar</a>
-                        </td>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Situação</th>
+                        <th>Ações</th>
                     </tr>
-                <% }) %>
-                <% if (usuarios.length === 0) { %>
-                    <tr><td colspan="5">Nenhum usuário cadastrado.</td></tr>
+                </thead>
+                <tbody>
+                    <% usuarios.forEach(u=> { %>
+                        <tr>
+                            <td>
+                                <%= u.id %>
+                            </td>
+                            <td><strong>
+                                    <%= u.nome %>
+                                </strong></td>
+                            <td>
+                                <%= u.email %>
+                            </td>
+                            <td>
+                                <%= u.situacao==1 ? 'Ativo' : 'Inativo' %>
+                            </td>
+                            <td class="acoes">
+                                <a class="btn btn-sucesso btn-sm" href="/usuarios/editar/<%= u.id %>">Editar</a>
+                                <a class="btn btn-danger btn-sm" href="/usuarios/excluir/<%= u.id %>"
+                                    onclick="return confirm('Deseja realmente excluir este usuário?')">Deletar</a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                            <% if (usuarios.length===0) { %>
+                                <tr>
+                                    <td colspan="5">Nenhum usuário cadastrado.</td>
+                                </tr>
+                                <% } %>
+                </tbody>
+            </table>
+        </div>
+        <!-- Paginação com preservação dos filtros -->
+        <div class="paginacao">
+
+            <% if (pagina> 1) { %>
+                <a class="btn btn-secundario"
+                    href="/usuarios?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina - 1 %>">
+                    Anterior
+                </a>
                 <% } %>
-            </tbody>
-        </table>
-    </div>
-    <!-- Paginação com preservação dos filtros -->
-    <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:20px 0;">
-        <% if (pagina > 1) { %>
-            <a class="btn btn-secundario"
-               href="/usuarios?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina - 1 %>">Anterior</a>
-        <% } %>
-        <span>Página <strong><%= pagina %></strong> de <strong><%= totalPaginas %></strong></span>
-        <% if (pagina < totalPaginas) { %>
-            <a class="btn btn-secundario"
-               href="/usuarios?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina + 1 %>">Próxima</a>
-        <% } %>
-    </div>
-</main>
-<%- include('../includes/footer.ejs') %>
+
+                    <span class="paginacao-info">
+                        Página <strong>
+                            <%= pagina %>
+                        </strong>
+                        de <strong>
+                            <%= totalPaginas %>
+                        </strong>
+                    </span>
+
+                    <% if (pagina < totalPaginas) { %>
+                        <a class="btn btn-secundario"
+                            href="/usuarios?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina + 1 %>">
+                            Próxima
+                        </a>
+                        <% } %>
+
+        </div>
+    </main>
+    <%- include('../includes/footer.ejs') %>
