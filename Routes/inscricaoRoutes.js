@@ -8,54 +8,65 @@ const BD = require('../db');
 // ======================================================
 
 router.get('/', async (req, res) => {
-
     try {
+        const busca = String(req.query.busca || '').trim();
+        const ordem = String(req.query.ordem || 'id');
+        const ordenacoes = {
+            id: 'i.id ASC',
+            id_desc: 'i.id DESC',
+            participante: 'p.nome ASC',
+            evento: 'e.titulo ASC',
+            status: 'i.status ASC'
+        };
+        const ordenarPor = ordenacoes[ordem] || ordenacoes.id;
+        const paginaRecebida = Number(req.query.pagina);
+        let pagina = Number.isSafeInteger(paginaRecebida) && paginaRecebida > 0
+            ? paginaRecebida : 1;
+
+        const limite = 5;
+        const pesquisa = `%${busca}%`;
+
+        const totalResultado = await BD.query(`
+            SELECT COUNT(*) AS total
+            FROM inscricoes i INNER JOIN participantes p ON i.participante_id = p.id INNER JOIN eventos e ON i.evento_id = e.id
+            WHERE p.nome ILIKE $1
+                OR e.titulo ILIKE $1
+                OR i.status ILIKE $1
+        `, [pesquisa]);
+
+        const totalRegistros = Number(totalResultado.rows[0].total);
+        const totalPaginas = Math.max(1, Math.ceil(totalRegistros / limite));
+        pagina = Math.min(pagina, totalPaginas);
+        const offset = (pagina - 1) * limite;
 
         const resultado = await BD.query(`
-            SELECT
-                i.id,
-                i.participante_id,
-                i.evento_id,
-                i.data_inscricao,
-                i.status,
-                i.presente,
-                p.nome AS participante,
-                e.titulo AS evento
-
-            FROM inscricoes i
-
-            INNER JOIN participantes p
-                ON i.participante_id = p.id
-
-            INNER JOIN eventos e
-                ON i.evento_id = e.id
-
-            ORDER BY i.id
-        `);
+            SELECT i.id, i.participante_id, i.evento_id, i.data_inscricao, i.status, i.presente, p.nome AS participante, e.titulo AS evento FROM inscricoes i INNER JOIN participantes p ON i.participante_id = p.id INNER JOIN eventos e ON i.evento_id = e.id
+            WHERE p.nome ILIKE $1
+                OR e.titulo ILIKE $1
+                OR i.status ILIKE $1
+            ORDER BY ${ordenarPor}, i.id ASC
+            LIMIT $2 OFFSET $3
+        `, [pesquisa, limite, offset]);
 
         res.render('inscricoes/index', {
             inscricoes: resultado.rows,
-            usuario: req.session.usuario
+            usuario: req.session.usuario,
+            busca,
+            ordem: ordenacoes[ordem] ? ordem : 'id',
+            pagina,
+            totalPaginas,
+            totalRegistros
         });
-
     } catch (erro) {
-
-        console.log(
-            'Erro ao listar inscrições: ' + erro
-        );
-
-        res.status(500).send(
-            'Erro ao carregar inscrições'
-        );
-
+        console.error('Erro ao listar inscricoes:', erro);
+        res.status(500).send('Erro ao carregar inscricoes');
     }
-
 });
 
 
-// ======================================================
-// ABRIR TELA NOVA INSCRIÇÃO
-// ======================================================
+// ============================================
+// ABRIR FORMULÁRIO
+// ============================================
 
 router.get('/novo', async (req, res) => {
 
