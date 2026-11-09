@@ -1,30 +1,39 @@
-<%- include('../includes/header', { titulo: 'Cadastrar participante', usuario }) %>
-<main class="conteudo">
-    <div class="cabecalho-conteudo">
-        <div>
-            <h1>Cadastrar participante</h1>
-            <p>Cadastre um novo participante.</p>
+<%- include('../includes/header', { titulo: 'Cadastrar participante' , usuario }) %>
+    <main class="conteudo">
+        <div class="cabecalho-conteudo">
+            <div>
+                <h1>Cadastrar participante</h1>
+                <p>Cadastre um novo participante.</p>
+            </div>
         </div>
-    </div>
-    <div class="card">
-        <form action="/participantes/novo" method="POST">
-            <div class="campo-formulario">
-                <label for="nome">Nome</label>
-                <input type="text" id="nome" name="nome" required>
-            </div>
-            <div class="campo-formulario">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="campo-formulario">
-                <label for="telefone">Telefone</label>
-                <input type="text" id="telefone" name="telefone" >
-            </div>
-            <div class="botoes-formulario">
-                <a class="btn btn-muted" href="/participantes">Cancelar</a>
-                <button class="btn btn-primario" type="submit">Salvar</button>
-            </div>
-        </form>
-    </div>
-</main>
-<%- include('../includes/footer.ejs') %>
+        <div class="card">
+            <form action="/participantes/novo" method="POST">
+                <div class="campo-formulario">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" required maxlength="100" minlength="3"
+                        placeholder="Digite o nome">
+                </div>
+                <div class="linha-formulario" style="margin-top:16px">
+                    <div class="campo-formulario">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" placeholder="adm@email.com" required maxlength="150"
+                            minlength="3">
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="telefone">Telefone</label>
+                        <input type="number" id="telefone" name="telefone" placeholder="Digite o telefone" required
+                            maxlength="11" minlength="3">
+                    </div>
+                </div>
+                <div class="botoes-formulario">
+                    <a class="btn btn-muted" href="/participantes">
+                        Cancelar
+                    </a>
+                    <button class="btn btn-primario" type="submit">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <%- include('../includes/footer.ejs') %>
