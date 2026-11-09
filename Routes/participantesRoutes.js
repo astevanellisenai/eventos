@@ -8,40 +8,63 @@ const BD = require('../db');
 // ============================================
 
 router.get('/', async (req, res) => {
-
     try {
+        const busca = String(req.query.busca || '').trim();
+        const ordem = String(req.query.ordem || 'nome');
+        const ordenacoes = {
+            nome: 'p.nome ASC',
+            nome_desc: 'p.nome DESC',
+            id: 'p.id ASC',
+            id_desc: 'p.id DESC'
+        };
+        const ordenarPor = ordenacoes[ordem] || ordenacoes.nome;
+        const paginaRecebida = Number(req.query.pagina);
+        let pagina = Number.isSafeInteger(paginaRecebida) && paginaRecebida > 0
+            ? paginaRecebida : 1;
+
+        const limite = 5;
+        const pesquisa = `%${busca}%`;
+
+        const totalResultado = await BD.query(`
+            SELECT COUNT(*) AS total
+            FROM participantes p
+            WHERE p.nome ILIKE $1
+                OR p.email ILIKE $1
+                OR COALESCE(p.telefone, '') ILIKE $1
+        `, [pesquisa]);
+
+        const totalRegistros = Number(totalResultado.rows[0].total);
+        const totalPaginas = Math.max(1, Math.ceil(totalRegistros / limite));
+        pagina = Math.min(pagina, totalPaginas);
+        const offset = (pagina - 1) * limite;
 
         const resultado = await BD.query(`
-            SELECT
-                id,
-                nome,
-                email,
-                telefone,
-                criado_em
-            FROM participantes
-            ORDER BY nome
-        `);
+            SELECT p.id, p.nome, p.email, p.telefone, p.criado_em FROM participantes p
+            WHERE p.nome ILIKE $1
+                OR p.email ILIKE $1
+                OR COALESCE(p.telefone, '') ILIKE $1
+            ORDER BY ${ordenarPor}, p.id ASC
+            LIMIT $2 OFFSET $3
+        `, [pesquisa, limite, offset]);
 
         res.render('participantes/index', {
             participantes: resultado.rows,
-            usuario: req.session.usuario
+            usuario: req.session.usuario,
+            busca,
+            ordem: ordenacoes[ordem] ? ordem : 'nome',
+            pagina,
+            totalPaginas,
+            totalRegistros
         });
-
+    } catch (erro) {
+        console.error('Erro ao listar participantes:', erro);
+        res.status(500).send('Erro ao carregar participantes');
     }
-    catch (erro) {
-
-        console.log('Erro ao listar participantes: ' + erro);
-
-        res.status(500).send(
-            'Erro ao carregar participantes'
-        );
-    }
-
 });
 
 
 // ============================================
-// ABRIR TELA NOVO PARTICIPANTE
+// ABRIR FORMULÁRIO
 // ============================================
 
 router.get('/novo', (req, res) => {
