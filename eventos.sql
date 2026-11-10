@@ -37,35 +37,22 @@ CREATE TABLE categorias (
 
 CREATE TABLE eventos (
     id SERIAL PRIMARY KEY,
-
     titulo VARCHAR(150) NOT NULL,
-
     descricao TEXT,
-
     data_evento DATE NOT NULL,
-
     horario TIME NOT NULL,
-
     local VARCHAR(150) NOT NULL,
-
     quantidade_vagas INTEGER NOT NULL,
-
     imagem_url VARCHAR(255),
-
     categoria_id INTEGER NOT NULL,
-
     organizador_id INTEGER NOT NULL,
-
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT fk_evento_categoria
         FOREIGN KEY (categoria_id)
         REFERENCES categorias(id),
-
     CONSTRAINT fk_evento_organizador
         FOREIGN KEY (organizador_id)
         REFERENCES usuarios(id),
-
     CONSTRAINT chk_quantidade_vagas
         CHECK (quantidade_vagas > 0)
 );
