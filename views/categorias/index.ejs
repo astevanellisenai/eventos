@@ -1,92 +1,120 @@
-<%- include('../includes/header', { titulo: 'Categorias', usuario }) %>
-<main class="conteudo">
-    <div class="cabecalho-conteudo">
-        <div>
-            <h1>Categorias</h1>
-            <p>Organize os eventos por tipo.</p>
+<%- include('../includes/header', { titulo: 'Categorias' , usuario }) %>
+    <main class="conteudo">
+        <div class="cabecalho-conteudo">
+            <div>
+                <h1>Categorias</h1>
+                <p>Organize os eventos por tipo.</p>
+            </div>
+            <a class="btn btn-primario" href="/categorias/novo">
+                + Nova categoria
+            </a>
         </div>
-        <a class="btn btn-primario" href="/categorias/novo">
-            + Nova categoria
-        </a>
-    </div>
-    <!-- Aula 12: pesquisa e ordenação -->
-    <form method="GET" action="/categorias"
-          style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:20px 0;">
-        <input type="text" name="busca" placeholder="Pesquisar nome ou descrição"
-               value="<%= busca %>" style="padding:9px; min-width:240px;">
+        <!-- Aula 12: pesquisa e ordenação -->
+        <form method="GET" action="/categorias" class="barra-filtros">
 
-        <select name="ordem" style="padding:9px;">
-            <option value="nome" <%= ordem === 'nome' ? 'selected' : '' %>>Nome A-Z</option>
-            <option value="nome_desc" <%= ordem === 'nome_desc' ? 'selected' : '' %>>Nome Z-A</option>
-            <option value="id" <%= ordem === 'id' ? 'selected' : '' %>>ID crescente</option>
-            <option value="id_desc" <%= ordem === 'id_desc' ? 'selected' : '' %>>ID decrescente</option>
-        </select>
+            <input type="text" name="busca" class="campo-pesquisa" placeholder="Pesquisar nome ou descrição"
+                value="<%= busca %>">
 
-        <button type="submit" class="btn btn-primario">Pesquisar</button>
-        <a href="/categorias" class="btn">Limpar</a>
-    </form>
+            <select name="ordem" class="campo-ordenacao">
+                <option value="nome" <%=ordem==='nome' ? 'selected' : '' %>>Nome A-Z</option>
+                <option value="nome_desc" <%=ordem==='nome_desc' ? 'selected' : '' %>>Nome Z-A</option>
+                <option value="id" <%=ordem==='id' ? 'selected' : '' %>>ID crescente</option>
+                <option value="id_desc" <%=ordem==='id_desc' ? 'selected' : '' %>>ID decrescente</option>
+            </select>
 
-    <p style="margin-bottom:12px;">
-        Total encontrado: <strong><%= totalRegistros %></strong>
-    </p>
+            <button type="submit" class="btn btn-primario">
+                Pesquisar
+            </button>
 
-    <div class="tabela-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% categorias.forEach(c => { %>
+            <a href="/categorias" class="btn btn-muted">
+                Limpar
+            </a>
+
+        </form>
+
+        <!-- TOTAL DE REGISTROS -->
+
+        <p class="total-registros">
+            Total encontrado: <strong>
+                <%= totalRegistros %>
+            </strong>
+        </p>
+
+        <div class="tabela-container">
+            <table>
+                <thead>
                     <tr>
-                        <td><%= c.id %></td>
-                        <td>
-                            <strong><%= c.nome %></strong>
-                        </td>
-                        <td><%= c.descricao %></td>
-                        <td class="acoes">
-                            <form 
-                                action="/categorias/excluir/<%= c.id %>"
-                                method="POST"
-                                onsubmit="return confirm('Deseja realmente excluir essa categoria?')"
-                            >
-                                <button type="submit"
-                                        title="Excluir"
-                                        class="btn btn-danger btn-sm">
-                                    Deletar
-                                </button>
-                            </form>
-                            <a class="btn btn-sucesso btn-sm" href="/categorias/editar/<%= c.id %>">
-                                Editar
-                            </a>
-                        </td>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Ações</th>
                     </tr>
-                <% }) %>
-                <% if (categorias.length === 0) { %>
-                    <tr><td colspan="4">Nenhuma categoria encontrada.</td></tr>
+                </thead>
+                <tbody>
+                    <% categorias.forEach(c=> { %>
+                        <tr>
+                            <td>
+                                <%= c.id %>
+                            </td>
+                            <td>
+                                <strong>
+                                    <%= c.nome %>
+                                </strong>
+                            </td>
+                            <td>
+                                <%= c.descricao %>
+                            </td>
+                            <td class="acoes">
+                                <form action="/categorias/excluir/<%= c.id %>" method="POST"
+                                    onsubmit="return confirm('Deseja realmente excluir essa categoria?')">
+                                    <button type="submit" title="Excluir" class="btn btn-danger btn-sm">
+                                        Deletar
+                                    </button>
+                                </form>
+                                <a class="btn btn-sucesso btn-sm" href="/categorias/editar/<%= c.id %>">
+                                    Editar
+                                </a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                            <% if (categorias.length===0) { %>
+                                <tr>
+                                    <td colspan="4">Nenhuma categoria encontrada.</td>
+                                </tr>
+                                <% } %>
+                </tbody>
+            </table>
+        </div>
+        <!-- Aula 12: paginação -->
+
+        <!-- PAGINAÇÃO -->
+
+        <div class="paginacao">
+
+            <% if (pagina> 1) { %>
+                <a class="btn btn-secundario"
+                    href="/categorias?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina - 1 %>">
+                    Anterior
+                </a>
                 <% } %>
-            </tbody>
-        </table>
-    </div>
-    <!-- Aula 12: paginação -->
-    <div style="display:flex; gap:12px; align-items:center; margin:20px 0;">
-        <% if (pagina > 1) { %>
-            <a class="btn"
-               href="/categorias?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina - 1 %>">
-                Anterior
-            </a>
-        <% } %>
-        <span>Página <strong><%= pagina %></strong> de <strong><%= totalPaginas %></strong></span>
-        <% if (pagina < totalPaginas) { %>
-            <a class="btn"
-               href="/categorias?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina + 1 %>">
-                Próxima
-            </a>
-        <% } %>
-    </div>
-</main>
-<%- include('../includes/footer.ejs') %>
+
+                    <span class="paginacao-info">
+                        Página <strong>
+                            <%= pagina %>
+                        </strong>
+                        de <strong>
+                            <%= totalPaginas %>
+                        </strong>
+                    </span>
+
+                    <% if (pagina < totalPaginas) { %>
+                        <a class="btn btn-secundario"
+                            href="/categorias?busca=<%= encodeURIComponent(busca) %>&ordem=<%= ordem %>&pagina=<%= pagina + 1 %>">
+                            Próxima
+                        </a>
+                        <% } %>
+
+        </div>
+
+    </main>
+    <%- include('../includes/footer.ejs') %>
