@@ -1,93 +1,176 @@
-<%- include("includes/header", {titulo: "Painel Administrativo" , usuario}) %>
-    <main>
+<%- include("includes/header", { titulo: "Painel Administrativo" , usuario }) %>
+
+    <main class="conteudo dashboard">
+
+        <!-- CABEÇALHO DO DASHBOARD -->
+
         <h1>Dashboard</h1>
-        <p>
-            Usuário:
-            <strong>
-                <%= usuario.nome %>
-            </strong>
-        </p>
-        <a href="/admin">Voltar</a>
-        <hr>
 
-        <h2>Indicadores</h2>
+        <!-- INDICADORES -->
+        <section class="dashboard-secao">
+            <h2>Indicadores Gerais</h2>
 
-        <p>Eventos:
-            <strong>
-                <%= totalEventos %>
-            </strong>
-        </p>
+            <div class="dashboard-indicadores">
 
-        <p>Participantes:
-            <strong>
-                <%= totalParticipantes %>
-            </strong>
-        </p>
+                <div class="dashboard-card">
+                    <h3>Eventos</h3>
+                    <p>
+                        <%= totalEventos %>
+                    </p>
+                </div>
 
-        <p>Inscrições:
-            <strong>
-                <%= totalInscricoes %>
-            </strong>
-        </p>
+                <div class="dashboard-card">
+                    <h3>Participantes</h3>
+                    <p>
+                        <%= totalParticipantes %>
+                    </p>
+                </div>
 
-        <p>Usuários Ativos:
-            <strong>
-                <%= usuariosAtivos %>
-            </strong>
-        </p>
+                <div class="dashboard-card">
+                    <h3>Inscrições</h3>
+                    <p>
+                        <%= totalInscricoes %>
+                    </p>
+                </div>
 
-        <h2>Próximos Eventos</h2>
-        <table border="1">
-            <tr>
-                <th>Evento</th>
-                <th>Data</th>
-                <th>Horário</th>
-                <th>Local</th>
-            </tr>
+                <div class="dashboard-card">
+                    <h3>Usuários Ativos</h3>
+                    <p>
+                        <%= usuariosAtivos %>
+                    </p>
+                </div>
 
-            <% proximosEventos.forEach(evento=> { %>
-                <tr>
-                    <td>
-                        <%= evento.titulo %>
-                    </td>
-                    <td>
-                        <%= evento.data_evento %>
-                    </td>
-                    <td>
-                        <%= evento.horario %>
-                    </td>
-                    <td>
-                        <%= evento.local %>
-                    </td>
-                </tr>
-                <% }) %>
-        </table>
+            </div>
+        </section>
 
-        <h2>Eventos com mais Inscrições</h2>
-        <ol>
-            <% eventosMaisInscricoes.forEach(evento=> { %>
-                <li>
-                    <%= evento.titulo %> - <%= evento.total %>
-                </li>
-                <% }) %>
-        </ol>
+        <!-- PRÓXIMOS EVENTOS -->
+        <section class="dashboard-secao">
+            <h2>Próximos Eventos</h2>
 
-        <h2>Inscrições por Status</h2>
-        <ul>
-            <% inscricaoStatus.forEach(item=> { %>
-                <li>
-                    <%= item.status %> - <%= item.total %>
-                </li>
-                <% }) %>
-        </ul>
+            <div class="table-wrap dashboard-tabela">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Evento</th>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Local</th>
+                        </tr>
+                    </thead>
 
-        <h2>Eventos por Categoria</h2>
-        <ul>
-            <% eventosCategoria.forEach(item=> { %>
-                <li>
-                    <%= item.categoria %> - <%= item.total %>
-                </li>
-                <% }) %>
-        </ul>
+                    <tbody>
+                        <% if (proximosEventos.length> 0) { %>
+
+                            <% proximosEventos.forEach(evento=> { %>
+                                <tr>
+                                    <td>
+                                        <%= evento.titulo %>
+                                    </td>
+                                    <td>
+                                        <%= evento.data_evento %>
+                                    </td>
+                                    <td>
+                                        <%= evento.horario %>
+                                    </td>
+                                    <td>
+                                        <%= evento.local %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="4">
+                                                Nenhum evento disponível.
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- RESUMOS DO SISTEMA -->
+        <section class="dashboard-secao">
+            <h2>Resumo do Sistema</h2>
+
+            <div class="dashboard-resumos">
+
+                <!-- EVENTOS MAIS INSCRITOS -->
+                <div class="dashboard-painel">
+                    <h3>Eventos com Mais Inscrições</h3>
+
+                    <% if (eventosMaisInscricoes.length> 0) { %>
+                        <ol class="dashboard-lista">
+                            <% eventosMaisInscricoes.forEach(evento=> { %>
+                                <li>
+                                    <span>
+                                        <%= evento.titulo %>
+                                    </span>
+                                    <strong>
+                                        <%= evento.total %>
+                                    </strong>
+                                </li>
+                                <% }) %>
+                        </ol>
+                        <% } else { %>
+                            <p class="dashboard-vazio">
+                                Nenhuma inscrição encontrada.
+                            </p>
+                            <% } %>
+                </div>
+
+                <!-- INSCRIÇÕES POR STATUS -->
+                <div class="dashboard-painel">
+                    <h3>Inscrições por Status</h3>
+
+                    <% if (inscricaoStatus.length> 0) { %>
+                        <ul class="dashboard-lista">
+                            <% inscricaoStatus.forEach(item=> { %>
+                                <li>
+                                    <span>
+                                        <%= item.status %>
+                                    </span>
+                                    <strong>
+                                        <%= item.total %>
+                                    </strong>
+                                </li>
+                                <% }) %>
+                        </ul>
+                        <% } else { %>
+                            <p class="dashboard-vazio">
+                                Nenhuma inscrição encontrada.
+                            </p>
+                            <% } %>
+                </div>
+
+                <!-- EVENTOS POR CATEGORIA -->
+                <div class="dashboard-painel">
+                    <h3>Eventos por Categoria</h3>
+
+                    <% if (eventosCategoria.length> 0) { %>
+                        <ul class="dashboard-lista">
+                            <% eventosCategoria.forEach(item=> { %>
+                                <li>
+                                    <span>
+                                        <%= item.categoria %>
+                                    </span>
+                                    <strong>
+                                        <%= item.total %>
+                                    </strong>
+                                </li>
+                                <% }) %>
+                        </ul>
+                        <% } else { %>
+                            <p class="dashboard-vazio">
+                                Nenhuma categoria encontrada.
+                            </p>
+                            <% } %>
+                </div>
+
+            </div>
+        </section>
+
     </main>
-<%- include("includes/footer") %>
+
+    <%- include("includes/footer") %>
